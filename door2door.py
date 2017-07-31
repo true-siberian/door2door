@@ -7,7 +7,7 @@ import json
 pickup_dropoff_data = ''
 #Specify path to .json file with events data on local machine
 events_data = ''
-#Specify path and name mask for output .csv file. Pattern: %PATH TO DIRECTORY%/Your_output_file_name
+#Specify path and name mask for output .csv file. Pattern: %PATH TO DIRECTORY%/Your_output_file_name_w/o_extension
 file_for_result_data = ''
 
 #Converts '2017-07-30T15:44:33.000+02:00' -> '2017-07-30 15:44:33'
@@ -37,7 +37,7 @@ with open(events_data) as jsonfile:
 #Saves output results to selected directory
 output = file_for_result_data+strftime('%Y-%m-%d_%H-%M-%S', gmtime())+'.csv'
 file_for_output = open(output, 'w')
-file_for_output.write('pickup_et,pickup_at,pickup_delta,dropoff_et,dropoff_at,dropoff_delta,TSG,booking_id' + '\n')
+file_for_output.write('pickup_et,pickup_at,pickup_delta,dropoff_et,dropoff_at,dropoff_delta,TSG,area_start,area_stop,booking_id' + '\n')
 
 #Loop takes entries for every selected booking_id
 for booking_id in bookings_to_process:
@@ -52,8 +52,10 @@ for booking_id in bookings_to_process:
             for row in spamreader:
                 if row['booking_id'] == booking_id and row['status'] == 'open' and row['type'] == 'pickup':
                     pickup_et.append([row['estimated_time_utc_0'], row['datetime_utc_0']])
+                    area_start = row['postal']
                 elif row['booking_id'] == booking_id and row['status'] == 'open' and row['type'] == 'dropoff':
                     dropoff_et.append([row['estimated_time_utc_0'], row['datetime_utc_0']])
+                    area_stop = row['postal']
                 elif row['booking_id'] == booking_id and row['status'] == 'closed' and row['type'] == 'pickup':
                     pickup_at = row['actual_time_utc_0']
                 elif row['booking_id'] == booking_id and row['status'] == 'closed' and row['type'] == 'dropoff':
@@ -83,6 +85,14 @@ for booking_id in bookings_to_process:
             processed_row.append(dropoff_delta)
             #TSG calculation [Trip Schedule Gap]
             processed_row.append(str(float(dropoff_delta) - float(pickup_delta)))
+            if area_start:
+                processed_row.append(area_start)
+            else:
+                processed_row.append('NaN')
+            if area_stop:
+                processed_row.append(area_stop)
+            else:
+                processed_row.append('NaN')
             processed_row.append(booking_id)
             #Writes list to .csv file
             file_for_output.write(','.join(processed_row) + '\n')
