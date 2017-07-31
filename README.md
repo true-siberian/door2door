@@ -10,9 +10,13 @@ where first part in parentheses means initially estimated date and time for trip
 It shows us a trip schedule shift and can indicate one of the following things:
 
 -insufficient coverage areas (too few drivers/vehicles)
+
 -areas with traffic jam/road works
+
 -weekday traffic density increasing
+
 -problems with driver’s navigation/discipline/skills
+
 -vehicle’s bad condition
 
 Using this index company can fit time estimations to real data and thus improve service level for problem areas. Also with using TSG it is posssible to control company's fleet en masse at longer timelenth.
